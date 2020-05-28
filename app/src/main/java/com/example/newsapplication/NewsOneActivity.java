@@ -55,6 +55,7 @@ public class NewsOneActivity extends AppCompatActivity {
 //        }
 
         // Layout Managers:
+        
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         // Adapter:
