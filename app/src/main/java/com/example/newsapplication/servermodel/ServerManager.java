@@ -4,12 +4,23 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.example.newsapplication.NewsFiveActivity;
+import com.example.newsapplication.NewsFourActivity;
 import com.example.newsapplication.NewsOneActivity;
+import com.example.newsapplication.NewsThreeActivity;
+import com.example.newsapplication.NewsTwoActivity;
 import com.example.newsapplication.adapter.AdapterForNewsOne;
 import com.example.newsapplication.model.ApiClient;
 import com.example.newsapplication.model.News;
 import com.example.newsapplication.model.RetrofitApi;
+import com.example.newsapplication.model.UpdateHeadLine;
 import com.example.newsapplication.model.UpdateNews;
+import com.example.newsapplication.model.UpdateNewsPojo;
+import com.example.newsapplication.model.UpdateTechCrunch;
+import com.example.newsapplication.model.UpdateWallStreetJournal;
+import com.example.newsapplication.model.eventbus.EventBusPojo;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -27,28 +38,17 @@ public class ServerManager {
         this.mContext = mContext;
         retrofitApi = ApiClient.getClient().create(RetrofitApi.class);
     }
-    public UpdateNews fetchDataFromServer(){
-        Call<UpdateNews> call = retrofitApi.getNews("bitcoin", "2020-04-27","publishedAt","35de1cffa06a48548d318541b675c79a");
-
-
-//        AsyncTask.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    updateNews = call.execute().body();
-//                }catch (Exception ex){
-//                    Toast.makeText(mContext, ex.getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
-
+    public void fetchDataFromServer(){
+        Call<UpdateNews> call = retrofitApi.getNews("bitcoin", "2020-04-29","publishedAt","35de1cffa06a48548d318541b675c79a");
         call.enqueue(new Callback<UpdateNews>() {
             @Override
             public void onResponse(Call<UpdateNews> call, Response<UpdateNews> response) {
                 updateNews = response.body();
-
-              //  List<News> newsList = updateNews.getArticles();
+                if (updateNews != null){
+                    List<News> newsList = updateNews.getArticles();
+                    EventBusPojo eventBusPojo = new EventBusPojo(newsList);
+                    EventBus.getDefault().post(eventBusPojo);
+                }
             }
 
             @Override
@@ -57,12 +57,89 @@ public class ServerManager {
             }
         });
 
+    }
 
-        if (updateNews != null){
-            return updateNews;
-        }else {
-            return updateNews;
-        }
+    public void fetchDataforUpdateHeadline(){
+        Call<UpdateHeadLine> call = retrofitApi.getHeadLines("us", "business","35de1cffa06a48548d318541b675c79a");
+        call.enqueue(new Callback<UpdateHeadLine>() {
+            @Override
+            public void onResponse(Call<UpdateHeadLine> call, Response<UpdateHeadLine> response) {
+                UpdateHeadLine updateHeadLine = response.body();
+                if (updateHeadLine != null){
+                    List<News> newsList = updateHeadLine.getArticles();
+                    EventBusPojo eventBusPojo = new EventBusPojo(newsList);
+                    EventBus.getDefault().post(eventBusPojo);
+                }
 
+
+            }
+
+            @Override
+            public void onFailure(Call<UpdateHeadLine> call, Throwable t) {
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void fetchDataforUpdateNewsPojo(){
+        Call<UpdateNewsPojo> call = retrofitApi.getNewsPojo("apple", "2020-05-27","2020-05-27","popularity","35de1cffa06a48548d318541b675c79a");
+        call.enqueue(new Callback<UpdateNewsPojo>() {
+            @Override
+            public void onResponse(Call<UpdateNewsPojo> call, Response<UpdateNewsPojo> response) {
+                UpdateNewsPojo  updateNewsPojo = response.body();
+                if (updateNewsPojo != null){
+                    List<News> newsList = updateNewsPojo.getArticles();
+                    EventBusPojo eventBusPojo = new EventBusPojo(newsList);
+                    EventBus.getDefault().post(eventBusPojo);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdateNewsPojo> call, Throwable t) {
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void fetchDataForUpdateTechCrunch(){
+        Call<UpdateTechCrunch> call = retrofitApi.getTechCrunch("techcrunch", "35de1cffa06a48548d318541b675c79a");
+        call.enqueue(new Callback<UpdateTechCrunch>() {
+            @Override
+            public void onResponse(Call<UpdateTechCrunch> call, Response<UpdateTechCrunch> response) {
+                UpdateTechCrunch  updateTechCrunch = response.body();
+                if (updateTechCrunch != null){
+                    List<News> newsList = updateTechCrunch.getArticles();
+                    EventBusPojo eventBusPojo = new EventBusPojo(newsList);
+                    EventBus.getDefault().post(eventBusPojo);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<UpdateTechCrunch> call, Throwable t) {
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void fetchDataForUpdateWallStreetJournal(){
+        Call<UpdateWallStreetJournal> call = retrofitApi.getWallStreetJournal("wsj.com", "35de1cffa06a48548d318541b675c79a");
+        call.enqueue(new Callback<UpdateWallStreetJournal>() {
+            @Override
+            public void onResponse(Call<UpdateWallStreetJournal> call, Response<UpdateWallStreetJournal> response) {
+                UpdateWallStreetJournal  updateWallStreetJournal = response.body();
+                if (updateWallStreetJournal != null){
+                    List<News> newsList = updateWallStreetJournal.getArticles();
+                    EventBusPojo eventBusPojo = new EventBusPojo(newsList);
+                    EventBus.getDefault().post(eventBusPojo);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<UpdateWallStreetJournal> call, Throwable t) {
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

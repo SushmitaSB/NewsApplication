@@ -9,7 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NewsTwoActivity"></activity>
+        <activity android:name=".NewsFiveActivity"></activity>
+        <activity android:name=".NewsFourActivity" />
+        <activity android:name=".NewsThreeActivity" />
+        <activity android:name=".NewsTwoActivity" />
         <activity android:name=".WebViewActivity" />
         <activity android:name=".NewsOneActivity" />
         <activity android:name=".HomePage" />

@@ -6,13 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#77ffffff"
-    tools:context=".NewsOneActivity">
+    tools:context=".NewsFourActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/recyclerForNewsOne">
+        android:id="@+id/rvId4"/>
 
-    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>

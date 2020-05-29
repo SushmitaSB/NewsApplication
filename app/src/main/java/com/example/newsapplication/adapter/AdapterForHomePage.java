@@ -11,7 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.newsapplication.NewsFiveActivity;
+import com.example.newsapplication.NewsFourActivity;
 import com.example.newsapplication.NewsOneActivity;
+import com.example.newsapplication.NewsThreeActivity;
+import com.example.newsapplication.NewsTwoActivity;
 import com.example.newsapplication.R;
 
 import java.util.ArrayList;
@@ -51,12 +55,18 @@ public class AdapterForHomePage extends RecyclerView.Adapter <AdapterForHomePage
                         context.startActivity(intent);
                         break;
                     case 1:
+                        Intent in = new Intent(context, NewsTwoActivity.class);
+                        context.startActivity(in);
                         break;
                     case 2:
+                        Intent newIntent = new Intent(context, NewsThreeActivity.class);
+                        context.startActivity(newIntent);
                         break;
-                    case 3:
+                    case 3: Intent i = new Intent(context, NewsFourActivity.class);
+                        context.startActivity(i);
                         break;
-                    case 4:
+                    case 4: Intent pass = new Intent(context, NewsFiveActivity.class);
+                        context.startActivity(pass);
                         break;
                 }
 
