@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.daimajia.swipe.util.Attributes;
 import com.example.newsapplication.adapter.AdapterForNewsOne;
 import com.example.newsapplication.model.ApiClient;
+import com.example.newsapplication.model.DateTimeManager;
 import com.example.newsapplication.model.News;
 import com.example.newsapplication.model.RetrofitApi;
 import com.example.newsapplication.model.UpdateNews;

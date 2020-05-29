@@ -11,6 +11,7 @@ import com.example.newsapplication.NewsThreeActivity;
 import com.example.newsapplication.NewsTwoActivity;
 import com.example.newsapplication.adapter.AdapterForNewsOne;
 import com.example.newsapplication.model.ApiClient;
+import com.example.newsapplication.model.DateTimeManager;
 import com.example.newsapplication.model.News;
 import com.example.newsapplication.model.RetrofitApi;
 import com.example.newsapplication.model.UpdateHeadLine;
@@ -39,7 +40,9 @@ public class ServerManager {
         retrofitApi = ApiClient.getClient().create(RetrofitApi.class);
     }
     public void fetchDataFromServer(){
-        Call<UpdateNews> call = retrofitApi.getNews("bitcoin", "2020-04-29","publishedAt","35de1cffa06a48548d318541b675c79a");
+        DateTimeManager dateTimeManager = new DateTimeManager(mContext);
+        String date = dateTimeManager.getPrevMonthDate();
+        Call<UpdateNews> call = retrofitApi.getNews("bitcoin", date,"publishedAt","35de1cffa06a48548d318541b675c79a");
         call.enqueue(new Callback<UpdateNews>() {
             @Override
             public void onResponse(Call<UpdateNews> call, Response<UpdateNews> response) {
@@ -82,7 +85,9 @@ public class ServerManager {
     }
 
     public void fetchDataforUpdateNewsPojo(){
-        Call<UpdateNewsPojo> call = retrofitApi.getNewsPojo("apple", "2020-05-27","2020-05-27","popularity","35de1cffa06a48548d318541b675c79a");
+        DateTimeManager dateTimeManager = new DateTimeManager(mContext);
+        String prevDate = dateTimeManager.getPrevdatDate();
+        Call<UpdateNewsPojo> call = retrofitApi.getNewsPojo("apple", prevDate,prevDate,"popularity","35de1cffa06a48548d318541b675c79a");
         call.enqueue(new Callback<UpdateNewsPojo>() {
             @Override
             public void onResponse(Call<UpdateNewsPojo> call, Response<UpdateNewsPojo> response) {
