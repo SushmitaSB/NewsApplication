@@ -1,4 +1,4 @@
-package com.example.newsapplication;
+package com.example.newsapplication.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+
+import com.example.newsapplication.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,7 +38,7 @@ public class SplashScreen extends AppCompatActivity {
             }
         },3000);
 
-        textView.setText("Daily news");
+        textView.setText("A good newspaper is a nation talking to itself.");
         Animation a = AnimationUtils.loadAnimation(this, R.anim.scale);
         a.reset();
         textView.clearAnimation();

@@ -1,15 +1,8 @@
 package com.example.newsapplication.servermodel;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.example.newsapplication.NewsFiveActivity;
-import com.example.newsapplication.NewsFourActivity;
-import com.example.newsapplication.NewsOneActivity;
-import com.example.newsapplication.NewsThreeActivity;
-import com.example.newsapplication.NewsTwoActivity;
-import com.example.newsapplication.adapter.AdapterForNewsOne;
 import com.example.newsapplication.model.ApiClient;
 import com.example.newsapplication.model.DateTimeManager;
 import com.example.newsapplication.model.News;

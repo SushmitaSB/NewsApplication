@@ -1,75 +1,57 @@
-package com.example.newsapplication;
+package com.example.newsapplication.views;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.ActionBar;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
-import com.daimajia.swipe.util.Attributes;
+import com.example.newsapplication.R;
 import com.example.newsapplication.adapter.AdapterForNewsOne;
-import com.example.newsapplication.model.ApiClient;
-import com.example.newsapplication.model.DateTimeManager;
 import com.example.newsapplication.model.News;
-import com.example.newsapplication.model.RetrofitApi;
-import com.example.newsapplication.model.UpdateNews;
 import com.example.newsapplication.model.eventbus.EventBusPojo;
 import com.example.newsapplication.servermodel.ServerManager;
-import com.google.android.gms.common.api.Api;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-public class NewsOneActivity extends AppCompatActivity {
-
-    @BindView(R.id.recyclerForNewsOne)
+public class NewsThreeActivity extends AppCompatActivity {
+    @BindView(R.id.revId3)
     RecyclerView recyclerView;
 
+    @BindView(R.id.mainLayout3)
+    LinearLayout linearLayout;
     private RecyclerView.Adapter mAdapter;
-
-    private ArrayList<String> mDataSet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news_one);
+        setContentView(R.layout.activity_news_three);
+
         ButterKnife.bind(this);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
-         ServerManager serverManager = new ServerManager(NewsOneActivity.this);
-          serverManager.fetchDataFromServer();
-   }
+        ServerManager serverManager = new ServerManager(NewsThreeActivity.this);
+        serverManager.fetchDataforUpdateNewsPojo();
+        Snackbar snackbar;
+        snackbar = Snackbar.make(linearLayout, "Double click to view news", Snackbar.LENGTH_LONG);
+        snackbar.setBackgroundTint(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        snackbar.show();
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventBusPojo(EventBusPojo eventBusPojo) {
         List<News> newsList = eventBusPojo.getNewsList();
-        if (newsList != null){
-            mAdapter = new AdapterForNewsOne(NewsOneActivity.this, newsList);
+        if (newsList != null) {
+            mAdapter = new AdapterForNewsOne(NewsThreeActivity.this, newsList);
             recyclerView.setAdapter(mAdapter);
         }
-
-    };
+    }
 
     @Override
     public void onStart() {
@@ -82,6 +64,5 @@ public class NewsOneActivity extends AppCompatActivity {
         super.onStop();
         EventBus.getDefault().unregister(this);
     }
-
-
 }
+

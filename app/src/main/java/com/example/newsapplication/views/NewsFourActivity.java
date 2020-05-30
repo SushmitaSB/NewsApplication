@@ -1,20 +1,19 @@
-package com.example.newsapplication;
+package com.example.newsapplication.views;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
+import com.example.newsapplication.R;
 import com.example.newsapplication.adapter.AdapterForNewsOne;
-import com.example.newsapplication.model.ApiClient;
 import com.example.newsapplication.model.News;
-import com.example.newsapplication.model.RetrofitApi;
-import com.example.newsapplication.model.UpdateTechCrunch;
-import com.example.newsapplication.model.UpdateWallStreetJournal;
 import com.example.newsapplication.model.eventbus.EventBusPojo;
 import com.example.newsapplication.servermodel.ServerManager;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -24,33 +23,37 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class NewsFiveActivity extends AppCompatActivity {
+public class NewsFourActivity extends AppCompatActivity {
 
-    @BindView(R.id.rvId5)
+    @BindView(R.id.rvId4)
     RecyclerView recyclerView;
 
+    @BindView(R.id.mainLayout4)
+    LinearLayout linearLayout;
     private RecyclerView.Adapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news_five);
+        setContentView(R.layout.activity_news_four);
         ButterKnife.bind(this);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
-        ServerManager serverManager = new ServerManager(NewsFiveActivity.this);
-        serverManager.fetchDataForUpdateWallStreetJournal();
+        ServerManager serverManager = new ServerManager(NewsFourActivity.this);
+        serverManager.fetchDataForUpdateTechCrunch();
+        Snackbar snackbar;
+        snackbar = Snackbar.make(linearLayout, "Double click to view news", Snackbar.LENGTH_LONG);
+        snackbar.setBackgroundTint(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        snackbar.show();
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventBusPojo(EventBusPojo eventBusPojo) {
         List<News> newsList = eventBusPojo.getNewsList();
         if (newsList != null) {
-            mAdapter = new AdapterForNewsOne(NewsFiveActivity.this, newsList);
+            mAdapter = new AdapterForNewsOne(NewsFourActivity.this, newsList);
             recyclerView.setAdapter(mAdapter);
         }
     }

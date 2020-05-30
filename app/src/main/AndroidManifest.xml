@@ -9,21 +9,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NewsFiveActivity"></activity>
-        <activity android:name=".NewsFourActivity" />
-        <activity android:name=".NewsThreeActivity" />
-        <activity android:name=".NewsTwoActivity" />
-        <activity android:name=".WebViewActivity" />
-        <activity android:name=".NewsOneActivity" />
-        <activity android:name=".HomePage" />
-        <activity android:name=".SplashScreen">
+        <activity android:name=".views.NewsFiveActivity"></activity>
+        <activity android:name=".views.NewsFourActivity" />
+        <activity android:name=".views.NewsThreeActivity" />
+        <activity android:name=".views.NewsTwoActivity" />
+        <activity android:name=".views.WebViewActivity" />
+        <activity android:name=".views.NewsOneActivity" />
+        <activity android:name=".views.HomePage" />
+        <activity android:name=".views.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".views.MainActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

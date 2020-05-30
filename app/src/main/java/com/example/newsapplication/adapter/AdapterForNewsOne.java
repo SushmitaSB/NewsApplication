@@ -2,31 +2,24 @@ package com.example.newsapplication.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
-import com.daimajia.swipe.implments.SwipeItemRecyclerMangerImpl;
 import com.example.newsapplication.R;
-import com.example.newsapplication.WebViewActivity;
+import com.example.newsapplication.views.WebViewActivity;
 import com.example.newsapplication.contexttag.Tag;
 import com.example.newsapplication.model.News;
 import com.squareup.picasso.Picasso;
 
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterForNewsOne extends RecyclerSwipeAdapter <AdapterForNewsOne.SimpleViewHolder> {
@@ -50,28 +43,15 @@ public class AdapterForNewsOne extends RecyclerSwipeAdapter <AdapterForNewsOne.S
 
 
         viewHolder.swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
-        viewHolder.swipeLayout.addSwipeListener(new SimpleSwipeListener() {
-            @Override
-            public void onOpen(SwipeLayout layout) {
-               // YoYo.with(Techniques.Tada).duration(500).delay(100).playOn(layout.findViewById(R.id.trash));
-            }
-        });
         viewHolder.swipeLayout.setOnDoubleClickListener(new SwipeLayout.DoubleClickListener() {
             @Override
             public void onDoubleClick(SwipeLayout layout, boolean surface) {
-                Toast.makeText(context, "DoubleClick", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, WebViewActivity.class);
                 intent.putExtra(Tag.WEBVIEW, arrayList.get(i).getUrl());
                 context.startActivity(intent);
             }
         });
 
-//        viewHolder.swipeLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
         viewHolder.buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

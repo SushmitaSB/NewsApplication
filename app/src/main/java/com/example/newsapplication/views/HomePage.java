@@ -1,4 +1,4 @@
-package com.example.newsapplication;
+package com.example.newsapplication.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
+import com.example.newsapplication.R;
 import com.example.newsapplication.adapter.AdapterForHomePage;
 
 import java.util.ArrayList;

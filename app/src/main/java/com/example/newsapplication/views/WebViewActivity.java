@@ -1,4 +1,4 @@
-package com.example.newsapplication;
+package com.example.newsapplication.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.example.newsapplication.R;
 import com.example.newsapplication.contexttag.Tag;
 
 import butterknife.BindView;

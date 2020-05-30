@@ -1,13 +1,11 @@
-package com.example.newsapplication;
+package com.example.newsapplication.views;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.newsapplication.R;
 import com.example.newsapplication.model.SharedPreferenceConfig;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -22,7 +21,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -49,17 +47,20 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.login_button)
     LoginButton loginButton;
 
-    @BindView(R.id.imgId)
-    ImageView imageView;
-
     @BindView(R.id.userId)
     TextView textView;
 
     @BindView(R.id.btId)
     Button button;
 
+    @BindView(R.id.loginText)
+    TextView loginText;
+
     @BindView(R.id.google_login_button)
     SignInButton signInButton;
+
+    @BindView(R.id.signoutId)
+    Button signOutButton;
 
     private CallbackManager mCallbackManager;
     private FirebaseAuth firebaseAuth;
@@ -86,20 +87,35 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferenceConfig = new SharedPreferenceConfig(MainActivity.this);
         if(sharedPreferenceConfig.read_login_status()){
             button.setVisibility(View.VISIBLE);
+            textView.setVisibility(View.VISIBLE);
+            loginText.setVisibility(View.GONE);
         }else {
+            button.setVisibility(View.GONE);
+            textView.setVisibility(View.GONE);
+            textView.setVisibility(View.GONE);
+            loginText.setVisibility(View.VISIBLE);
+        }
+
+        if (sharedPreferenceConfig.read_signin_status()){
+            loginButton.setVisibility(View.GONE);
+            signOutButton.setVisibility(View.VISIBLE);
+            button.setVisibility(View.VISIBLE);
+        }else {
+            textView.setVisibility(View.GONE);
+            loginButton.setVisibility(View.VISIBLE);
+            signOutButton.setVisibility(View.GONE);
             button.setVisibility(View.GONE);
         }
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,HomePage.class);
+                Intent intent = new Intent(MainActivity.this, HomePage.class);
                 startActivity(intent);
             }
         });
 
         //Faceboook login
-
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -125,18 +141,16 @@ public class MainActivity extends AppCompatActivity {
                 if (user != null){
                     user = firebaseAuth.getCurrentUser();
                     sharedPreferenceConfig.LoginStatus(true);
-                    imageView.setVisibility(View.VISIBLE);
                     textView.setVisibility(View.VISIBLE);
                     button.setVisibility(View.VISIBLE);
                     textView.setText(user.getDisplayName());
-                    if(user.getPhotoUrl() != null){
-                        String photoUrl = user.getPhotoUrl().toString();
-                        photoUrl = photoUrl +"type=large";
-                        Picasso.get().load(photoUrl).into(imageView);
-                    }
                     signInButton.setVisibility(View.GONE);
+                    loginText.setVisibility(View.GONE);
                 }else{
-
+                    signInButton.setVisibility(View.VISIBLE);
+                    button.setVisibility(View.GONE);
+                    textView.setVisibility(View.GONE);
+                    loginText.setVisibility(View.VISIBLE);
                 }
             }
         };
@@ -152,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         //For google signIn
-
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -163,12 +176,27 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 signIn();
+                signOutButton.setVisibility(View.VISIBLE);
+            }
+        });
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                googleSignInClient.signOut();
+                signOutButton.setVisibility(View.GONE);
+                loginButton.setVisibility(View.VISIBLE);
+                signInButton.setVisibility(View.VISIBLE);
+                loginText.setVisibility(View.VISIBLE);
+                textView.setVisibility(View.GONE);
+                button.setVisibility(View.GONE);
+                sharedPreferenceConfig.LoginStatus(false);
+                sharedPreferenceConfig.SignInStatus(false);
             }
         });
 
 
     }
-
 
     private void signIn(){
         Intent signInIntent = googleSignInClient.getSignInIntent();
@@ -187,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //for handling signin result
     private void handleSignInResult( Task<GoogleSignInAccount> task){
         try {
             GoogleSignInAccount acc = task.getResult(ApiException.class);
@@ -199,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //for handling google signin
     private void FireBaseGoogleAuth( GoogleSignInAccount acc){
         AuthCredential authCredential = GoogleAuthProvider.getCredential(acc.getIdToken(), null);
         mAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -210,14 +240,43 @@ public class MainActivity extends AppCompatActivity {
                     GoogleSignInAccount ac = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
                     Toast.makeText(MainActivity.this, ac.getDisplayName(), Toast.LENGTH_SHORT).show();
                     //update ui
-                    Intent intent = new Intent(MainActivity.this,HomePage.class);
-                    startActivity(intent);
+                    sharedPreferenceConfig.LoginStatus(true);
+                    sharedPreferenceConfig.SignInStatus(true);
+                    loginButton.setVisibility(View.GONE);
+                    loginText.setVisibility(View.GONE);
+                    button.setVisibility(View.VISIBLE);
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText(mUser.getDisplayName());
                 }else{
                     Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                    loginButton.setVisibility(View.VISIBLE);
+                    loginText.setVisibility(View.VISIBLE);
+                    button.setVisibility(View.GONE);
+                    textView.setVisibility(View.GONE);
                 }
             }
         });
     }
+
+//For handling facebook token
+    private void handleFacebookToken(AccessToken accessToken){
+        Log.d(TAG,"handleFacebookToken" + accessToken);
+
+        AuthCredential authCredential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "sign in with credential: sucessful");
+                }else{
+                    Log.d(TAG, "sign in with credential: failure" , task.getException());
+                    signInButton.setVisibility(View.VISIBLE);
+                    Toast.makeText(MainActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 
     @Override
     protected void onStart() {
@@ -231,26 +290,5 @@ public class MainActivity extends AppCompatActivity {
         if (authStateListener != null){
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
-    }
-
-    private void handleFacebookToken(AccessToken accessToken){
-        Log.d(TAG,"handleFacebookToken" + accessToken);
-
-        AuthCredential authCredential = FacebookAuthProvider.getCredential(accessToken.getToken());
-        firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    Log.d(TAG, "sign in with credential: sucessful");
-
-//                    Intent intent = new Intent(MainActivity.this,HomePage.class);
-//                    startActivity(intent);
-                }else{
-                    Log.d(TAG, "sign in with credential: failure" , task.getException());
-                    signInButton.setVisibility(View.VISIBLE);
-                    Toast.makeText(MainActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
     }
 }
