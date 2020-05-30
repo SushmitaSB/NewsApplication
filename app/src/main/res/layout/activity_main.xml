@@ -10,6 +10,24 @@
     tools:context=".MainActivity">
 
 
+    <ImageView
+        android:layout_width="60sp"
+        android:layout_height="60sp"
+        android:id="@+id/imgId"
+        android:layout_marginBottom="30sp"
+        android:layout_marginTop="30sp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/userId"
+        android:layout_marginBottom="20sp"
+        android:layout_marginTop="10sp"
+        android:visibility="gone"/>
+
+
     <com.facebook.login.widget.LoginButton
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,6 +47,19 @@
         android:layout_height="wrap_content"
         android:textSize="15sp"
         android:text="Login or SignIn to enter inside the app"/>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="40sp"
+        android:layout_marginTop="50sp"
+        android:layout_marginBottom="0sp"
+        android:text="Enter"
+        android:id="@+id/btId"
+        android:textColor="@color/white"
+        android:background="@color/colorPrimaryDark"
+        android:visibility="gone"
+        />
 
 
 

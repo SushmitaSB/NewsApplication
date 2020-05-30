@@ -11,8 +11,11 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.newsapplication.model.SharedPreferenceConfig;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -36,6 +39,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +48,15 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.login_button)
     LoginButton loginButton;
+
+    @BindView(R.id.imgId)
+    ImageView imageView;
+
+    @BindView(R.id.userId)
+    TextView textView;
+
+    @BindView(R.id.btId)
+    Button button;
 
     @BindView(R.id.google_login_button)
     SignInButton signInButton;
@@ -59,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     private String TAG1 = "MainActivity";
     private int RC_SIGN_IN =  1;
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private SharedPreferenceConfig sharedPreferenceConfig;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +83,20 @@ public class MainActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
         loginButton.setReadPermissions("email", "public_profile");
+        sharedPreferenceConfig = new SharedPreferenceConfig(MainActivity.this);
+        if(sharedPreferenceConfig.read_login_status()){
+            button.setVisibility(View.VISIBLE);
+        }else {
+            button.setVisibility(View.GONE);
+        }
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,HomePage.class);
+                startActivity(intent);
+            }
+        });
 
         //Faceboook login
 
@@ -94,7 +123,18 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null){
-
+                    user = firebaseAuth.getCurrentUser();
+                    sharedPreferenceConfig.LoginStatus(true);
+                    imageView.setVisibility(View.VISIBLE);
+                    textView.setVisibility(View.VISIBLE);
+                    button.setVisibility(View.VISIBLE);
+                    textView.setText(user.getDisplayName());
+                    if(user.getPhotoUrl() != null){
+                        String photoUrl = user.getPhotoUrl().toString();
+                        photoUrl = photoUrl +"type=large";
+                        Picasso.get().load(photoUrl).into(imageView);
+                    }
+                    signInButton.setVisibility(View.GONE);
                 }else{
 
                 }
@@ -202,12 +242,12 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
                     Log.d(TAG, "sign in with credential: sucessful");
-                    FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                    Intent intent = new Intent(MainActivity.this,HomePage.class);
-                    startActivity(intent);
+//                    Intent intent = new Intent(MainActivity.this,HomePage.class);
+//                    startActivity(intent);
                 }else{
                     Log.d(TAG, "sign in with credential: failure" , task.getException());
+                    signInButton.setVisibility(View.VISIBLE);
                     Toast.makeText(MainActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                 }
             }
