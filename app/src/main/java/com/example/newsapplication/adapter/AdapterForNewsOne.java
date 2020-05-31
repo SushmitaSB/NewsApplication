@@ -26,7 +26,6 @@ public class AdapterForNewsOne extends RecyclerSwipeAdapter <AdapterForNewsOne.S
 
     private Context context;
     private List<News> arrayList;
-   // protected SwipeItemRecyclerMangerImpl mItemManger = new SwipeItemRecyclerMangerImpl(this);
     public AdapterForNewsOne(Context context, List<News> arrayList){
         this.context = context;
         this.arrayList = arrayList;

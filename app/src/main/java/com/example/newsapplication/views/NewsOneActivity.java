@@ -5,12 +5,15 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 
 import com.example.newsapplication.R;
 import com.example.newsapplication.adapter.AdapterForNewsOne;
+import com.example.newsapplication.contexttag.Tag;
 import com.example.newsapplication.model.News;
+import com.example.newsapplication.model.PassData;
 import com.example.newsapplication.model.eventbus.EventBusPojo;
 import com.example.newsapplication.servermodel.ServerManager;
 import com.google.android.material.snackbar.Snackbar;
@@ -34,6 +37,7 @@ public class NewsOneActivity extends AppCompatActivity {
     LinearLayout linearLayout;
 
     private RecyclerView.Adapter mAdapter;
+    private Intent startingIntent;
 
     private ArrayList<String> mDataSet;
     @Override
@@ -44,8 +48,10 @@ public class NewsOneActivity extends AppCompatActivity {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
          ServerManager serverManager = new ServerManager(NewsOneActivity.this);
-          serverManager.fetchDataFromServer();
-
+        startingIntent = getIntent();
+        int whatYouSent = startingIntent.getIntExtra(Tag.ADAPTERPOSITION,0);
+        PassData passData = new PassData();
+        passData.PassDataToActivity(whatYouSent, serverManager);
         Snackbar snackbar;
         snackbar = Snackbar.make(linearLayout, "Double click to view news", Snackbar.LENGTH_LONG);
         snackbar.setBackgroundTint(ContextCompat.getColor(this, R.color.colorPrimaryDark));
