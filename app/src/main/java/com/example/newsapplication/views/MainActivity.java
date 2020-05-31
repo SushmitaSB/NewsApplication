@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +36,6 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,18 +71,111 @@ public class MainActivity extends AppCompatActivity {
     private String TAG1 = "MainActivity";
     private int RC_SIGN_IN =  1;
     private FirebaseAuth mAuth;
-    private FirebaseUser user;
     private SharedPreferenceConfig sharedPreferenceConfig;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        firebaseAuth = FirebaseAuth.getInstance();
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        mCallbackManager = CallbackManager.Factory.create();
-        loginButton.setReadPermissions("email", "public_profile");
-        sharedPreferenceConfig = new SharedPreferenceConfig(MainActivity.this);
+        InitializedVariables();
+        UpdateActivityUi();
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, HomePage.class);
+                    startActivity(intent);
+            }
+        });
+
+        //Faceboook login
+        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG,"onSuccess" + loginResult);
+
+                    handleFacebookToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG,"onCancel");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG,"onError");
+            }
+        });
+
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                    if (user != null) {
+                        user = firebaseAuth.getCurrentUser();
+                        sharedPreferenceConfig.LoginStatus(true);
+                        textView.setVisibility(View.VISIBLE);
+                        button.setVisibility(View.VISIBLE);
+                        textView.setText(user.getDisplayName());
+                        signInButton.setVisibility(View.GONE);
+                        loginText.setVisibility(View.GONE);
+                    } else {
+                        signInButton.setVisibility(View.VISIBLE);
+                        button.setVisibility(View.GONE);
+                        textView.setVisibility(View.GONE);
+                        loginText.setVisibility(View.VISIBLE);
+                    }
+
+            }
+        };
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                    if (currentAccessToken == null) {
+                        firebaseAuth.signOut();
+                    }
+            }
+        };
+
+
+        //For google signIn
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                    signIn();
+                    signOutButton.setVisibility(View.VISIBLE);
+            }
+        });
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    googleSignInClient.signOut();
+                    signOutButton.setVisibility(View.GONE);
+                    loginButton.setVisibility(View.VISIBLE);
+                    signInButton.setVisibility(View.VISIBLE);
+                    loginText.setVisibility(View.VISIBLE);
+                    textView.setVisibility(View.GONE);
+                    button.setVisibility(View.GONE);
+                    sharedPreferenceConfig.LoginStatus(false);
+                    sharedPreferenceConfig.SignInStatus(false);
+
+
+            }
+        });
+
+
+    }
+
+    private void UpdateActivityUi() {
         if(sharedPreferenceConfig.read_login_status()){
             button.setVisibility(View.VISIBLE);
             textView.setVisibility(View.VISIBLE);
@@ -106,96 +197,16 @@ public class MainActivity extends AppCompatActivity {
             signOutButton.setVisibility(View.GONE);
             button.setVisibility(View.GONE);
         }
+    }
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, HomePage.class);
-                startActivity(intent);
-            }
-        });
-
-        //Faceboook login
-        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG,"onSuccess" + loginResult);
-                handleFacebookToken(loginResult.getAccessToken());
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d(TAG,"onCancel");
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Log.d(TAG,"onError");
-            }
-        });
-
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null){
-                    user = firebaseAuth.getCurrentUser();
-                    sharedPreferenceConfig.LoginStatus(true);
-                    textView.setVisibility(View.VISIBLE);
-                    button.setVisibility(View.VISIBLE);
-                    textView.setText(user.getDisplayName());
-                    signInButton.setVisibility(View.GONE);
-                    loginText.setVisibility(View.GONE);
-                }else{
-                    signInButton.setVisibility(View.VISIBLE);
-                    button.setVisibility(View.GONE);
-                    textView.setVisibility(View.GONE);
-                    loginText.setVisibility(View.VISIBLE);
-                }
-            }
-        };
-
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-                if (currentAccessToken == null){
-                    firebaseAuth.signOut();
-                }
-            }
-        };
-
-
-        //For google signIn
+    private void InitializedVariables() {
+        ButterKnife.bind(this);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        mCallbackManager = CallbackManager.Factory.create();
+        loginButton.setReadPermissions("email", "public_profile");
+        sharedPreferenceConfig = new SharedPreferenceConfig(MainActivity.this);
         mAuth = FirebaseAuth.getInstance();
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        googleSignInClient = GoogleSignIn.getClient(this, gso);
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signIn();
-                signOutButton.setVisibility(View.VISIBLE);
-            }
-        });
-
-        signOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                googleSignInClient.signOut();
-                signOutButton.setVisibility(View.GONE);
-                loginButton.setVisibility(View.VISIBLE);
-                signInButton.setVisibility(View.VISIBLE);
-                loginText.setVisibility(View.VISIBLE);
-                textView.setVisibility(View.GONE);
-                button.setVisibility(View.GONE);
-                sharedPreferenceConfig.LoginStatus(false);
-                sharedPreferenceConfig.SignInStatus(false);
-            }
-        });
-
-
     }
 
     private void signIn(){
